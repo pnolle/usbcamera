@@ -7,6 +7,13 @@ import numpy
 # Define video capture class
 class VideoCaptureAsync:
     def __init__(self, src=0, width=640, height=480, driver=None):
+        self.init(src, width, height, driver)
+        
+    def reinit(self, src=0, width=640, height=480, driver=None):
+        print("reinit")
+        self.init(src, width, height, driver)
+        
+    def init(self, src=0, width=640, height=480, driver=None):
         self.src = src
         if driver is None:
             self.cap = cv2.VideoCapture(self.src)
@@ -19,7 +26,6 @@ class VideoCaptureAsync:
         self.started = False
         self.read_lock = threading.Lock()
         self.thread = None
-        print('init done')
 
     def get(self, var1):
         return self.cap.get(var1)
@@ -28,6 +34,7 @@ class VideoCaptureAsync:
         self.cap.set(var1, var2)
 
     def start(self):
+        print("start")
         if self.started:
             print('[!] Asynchroneous video capturing has already been started.')
             return None
@@ -45,7 +52,7 @@ class VideoCaptureAsync:
 
     def read(self):
         with self.read_lock:
-            print("video_capture read", self, type(self.frame))
+            print("video_capture read", self, self.grabbed, type(self.frame))
             if (type(self.frame) == numpy.ndarray):
                 frame = self.frame.copy()
             else:
@@ -54,6 +61,7 @@ class VideoCaptureAsync:
         return grabbed, frame
 
     def stop(self):
+        print("stop")
         self.started = False
         self.thread.join()
 

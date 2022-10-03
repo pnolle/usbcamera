@@ -26,17 +26,22 @@ def record_video(duration):
 	while time.time() <= time_end:
 		print('----- time loop -----')
 		ret, new_frame = capture.read()
-		frames += 1
-		images.append(new_frame)
   
-		print('frame #', frames, type(new_frame))
-  
-		L = ["frame #{frames}: {type}\n".format(frames=frames, type=type(new_frame))]
-		file1.writelines(L)
-		if (type(new_frame) == numpy.ndarray):
-			file1.writelines(",".join(str(x) for x in new_frame))
-		# print(images)
-  
+		if (type(new_frame) != numpy.ndarray):
+			print("no read - restarting")
+			file1.write("Frame #{frameno}: {type}.\n".format(frameno=frames, type=type(new_frame)))
+			capture.stop()
+			capture.reinit(src=0, width=vid_w, height=vid_h)
+			capture.start()
+		else:
+			frames += 1
+			images.append(new_frame)
+			print('frame #', frames, type(new_frame))
+			print(len(new_frame), len(new_frame[0]))
+			file1.write("Frame #{frameno}: {type}. Size: {ln}/{col}\n{pixel}\n".format(frameno=frames, type=type(new_frame), ln=len(new_frame), col=len(new_frame[0]), pixel=",".join(str(x) for x in new_frame[0][0])))
+			# file1.writelines(",".join(str(x) for x in new_frame[0][0]))
+			# file1.writelines(",".join(str(x) for x in new_frame))
+
 		# # Create a full screen video display. Comment the following 2 lines if you have a specific dimension 
 		# # of display window in mind and don't mind the window title bar.
 		# cv2.namedWindow('image',cv2.WND_PROP_FULLSCREEN)
@@ -51,7 +56,9 @@ def record_video(duration):
 		# 	frame = cv2.flip(frame,180)
 		# 	cv2.imshow('frame', frame)
 		if cv2.waitKey(1) & 0xFF == ord('q'):
+			print("cv break")
 			break
+	print("time ended")
 	capture.stop()
 	cv2.destroyAllWindows()
 	# The fps variable which counts the number of frames and divides it by 

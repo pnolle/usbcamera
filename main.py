@@ -1,7 +1,7 @@
 # Import the recording process
 from camera_record import record_video
 # set recording duration
-record_time = 20
+record_time = 2000
 # To run this as part of a bigger program, use mutltiprocessing to create a seperate process 
 # for video recording using the following lines.
 from multiprocessing import Process
