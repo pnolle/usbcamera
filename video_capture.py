@@ -2,6 +2,7 @@
 import threading
 import time
 import cv2
+import numpy
 
 # Define video capture class
 class VideoCaptureAsync:
@@ -18,6 +19,7 @@ class VideoCaptureAsync:
         self.started = False
         self.read_lock = threading.Lock()
         self.thread = None
+        print('init done')
 
     def get(self, var1):
         return self.cap.get(var1)
@@ -43,7 +45,11 @@ class VideoCaptureAsync:
 
     def read(self):
         with self.read_lock:
-            frame = self.frame.copy()
+            print("video_capture read", self, type(self.frame))
+            if (type(self.frame) == numpy.ndarray):
+                frame = self.frame.copy()
+            else:
+                frame = None
             grabbed = self.grabbed
         return grabbed, frame
 
